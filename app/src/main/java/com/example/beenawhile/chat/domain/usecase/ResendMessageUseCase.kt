@@ -2,7 +2,6 @@ package com.example.beenawhile.chat.domain.usecase
 
 import com.example.beenawhile.chat.data.ConversationRepository
 import com.example.beenawhile.chat.data.Message
-import com.example.beenawhile.chat.data.MessageStatus
 import com.example.beenawhile.chat.data.api.OpenAIRepository
 
 class ResendMessageUseCase(

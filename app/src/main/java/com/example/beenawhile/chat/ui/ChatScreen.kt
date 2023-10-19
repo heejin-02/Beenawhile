@@ -1,4 +1,3 @@
-import android.annotation.SuppressLint
 import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -67,7 +66,7 @@ fun ChatScreen(
 
     fun getCurrentTimeUsingDate(): String {
         val timeZone = TimeZone.getTimeZone("Asia/Seoul")
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
         dateFormat.timeZone = timeZone
         val currentDate = Date()
 
@@ -90,8 +89,10 @@ fun ChatScreen(
             // 여기에 다른 필요한 데이터도 추가할 수 있음
         )
 
+        val who = "User"
+
         // "messages" 레퍼런스에 데이터를 저장
-        myRef.push().setValue(messageData)
+        myRef.child(who).push().setValue(messageData)
 
         uiHandlers.onSendMessage(inputValue)
         inputValue = ""
