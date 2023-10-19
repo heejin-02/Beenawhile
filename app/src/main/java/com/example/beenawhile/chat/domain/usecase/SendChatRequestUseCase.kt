@@ -4,7 +4,6 @@ import com.example.beenawhile.chat.data.ConversationRepository
 import com.example.beenawhile.chat.data.Message
 import com.example.beenawhile.chat.data.MessageStatus
 import com.example.beenawhile.chat.data.api.OpenAIRepository
-import kotlinx.coroutines.delay
 
 class SendChatRequestUseCase(
     private val openAIRepository: OpenAIRepository,
