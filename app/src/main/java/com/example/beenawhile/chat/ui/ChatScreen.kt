@@ -1,4 +1,4 @@
-import android.app.Application
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -29,25 +29,20 @@ import com.example.beenawhile.chat.data.Message
 import com.example.beenawhile.chat.data.MessageStatus
 import com.example.beenawhile.utils.HorizontalSpacer
 import com.example.beenawhile.utils.VerticalSpacer
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import kotlinx.coroutines.launch
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
-
-class MyApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        // Firebase 초기화
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true) // 옵션으로 데이터 오프라인 지원을 활성화할 수 있습니다.
-    }
-}
 
 data class ChatScreenUiHandlers(
     val onSendMessage: (String) -> Unit = {},
     val onResendMessage: (Message) -> Unit = {}
 )
-//
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
@@ -74,25 +69,24 @@ fun ChatScreen(
         return formattedDate
     }
 
-    fun sendMessage() {
-        // Firebase Realtime Database의 "messages" 레퍼런스를 가져옴
-        val database = FirebaseDatabase.getInstance()
-        val myRef = database.getReference("messages")
+    // Firebase Realtime Database의 "messages" 레퍼런스를 가져옴
+    val database = FirebaseDatabase.getInstance()
+    val myRef = database.getReference("messages")
 
+    fun sendMessage() {
         // Firebase에 데이터를 쓰기 위한 데이터 모델을 생성
         val messageText = inputValue
         val currentTime = getCurrentTimeUsingDate()
 
         val messageData = hashMapOf(
             "message" to messageText,
-            "time" to currentTime
+            "time" to currentTime,
+            "isFromUser" to true
             // 여기에 다른 필요한 데이터도 추가할 수 있음
         )
 
-        val who = "User"
-
         // "messages" 레퍼런스에 데이터를 저장
-        myRef.child(who).push().setValue(messageData)
+        myRef.push().setValue(messageData)
 
         uiHandlers.onSendMessage(inputValue)
         inputValue = ""
@@ -100,6 +94,16 @@ fun ChatScreen(
             listState.animateScrollToItem(conversationState?.list?.size ?: 0)
         }
     }
+
+    myRef.addValueEventListener(object : ValueEventListener{
+        override fun onDataChange(snapshot: DataSnapshot){
+            val test = snapshot
+            Log.e("test", test.toString())
+        }
+        override fun onCancelled(error: DatabaseError){
+
+        }
+    })
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }

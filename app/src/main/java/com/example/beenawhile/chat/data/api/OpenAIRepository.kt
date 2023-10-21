@@ -1,5 +1,5 @@
 package com.example.beenawhile.chat.data.api
-//
+
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
@@ -38,14 +38,13 @@ class OpenAIRepository(private val openAI: OpenAI) {
 
         val messageData = hashMapOf(
             "message" to chatMessage.content,
-            "time" to currentTime
+            "time" to currentTime,
+            "isFromUser" to false
             // 여기에 다른 필요한 데이터도 추가할 수 있음
         )
 
-        val who = "AI"
-
         // "messages" 레퍼런스에 데이터를 저장
-        myRef.child(who).push().setValue(messageData)
+        myRef.push().setValue(messageData)
 
         return Message(
             text = chatMessage.content,
