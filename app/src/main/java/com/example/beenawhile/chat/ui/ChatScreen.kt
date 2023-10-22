@@ -95,15 +95,33 @@ fun ChatScreen(
         }
     }
 
-    myRef.addValueEventListener(object : ValueEventListener{
-        override fun onDataChange(snapshot: DataSnapshot){
-            val test = snapshot
-            Log.e("test", test.toString())
-        }
-        override fun onCancelled(error: DatabaseError){
+    myRef.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            val dataList = mutableListOf<Pair<String, DataSnapshot>>()
 
+            // 데이터베이스의 모든 자식 노드를 가져옴
+            snapshot.children.forEach { childSnapshot ->
+                // 각 자식 노드의 "time" 속성 값을 가져와 Pair에 저장
+                val time = childSnapshot.child("time").getValue(String::class.java)
+                time?.let {
+                    dataList.add(it to childSnapshot)
+                }
+            }
+
+            // 데이터를 시간대순으로 정렬
+            dataList.sortBy { it.first }
+
+            // 정렬된 데이터를 로그에 출력
+            for ((time, childSnapshot) in dataList) {
+                Log.e("test", "Time: $time, Data: ${childSnapshot.value}")
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            // 에러 처리
         }
     })
+
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
